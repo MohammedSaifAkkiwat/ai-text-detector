@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Model Evaluation Metrics</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <h1>Model Evaluation Metrics</h1>
+
+    {% if error %}
+    <p style="color: red;">{{ error }}</p>
+    {% else %}
+    <h2>Accuracy:</h2>
+    <p>{{ metrics.accuracy }}</p>
+
+    <h2>Classification Report:</h2>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>F1-Score</th>
+                <th>Support</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for label, scores in metrics.classification_report.items() %}
+            {% if label in ['ai', 'human'] %}
+            <tr>
+                <th>{{ label }}</th>
+                <td>{{ scores.precision }}</td>
+                <td>{{ scores.recall }}</td>
+                <td>{{ scores['f1-score'] }}</td>
+                <td>{{ scores.support }}</td>
+            </tr>
+            {% endif %}
+            {% if label == 'accuracy' %}
+            <tr style="font-weight: bold;">
+                <th>Accuracy</th>
+                <td colspan="4">{{ scores }}</td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <p><a href="/">Go back to the detector</a></p>
+</body>
+
+</html>

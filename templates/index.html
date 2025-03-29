@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AI Text Detector</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <p><a href="/metrics">View Model Evaluation Metrics</a> | <a href="/about">About</a></p>
+
+</head>
+
+<body>
+    <h1>AI Text Detector</h1>
+    <form method="POST" action="/predict" enctype="multipart/form-data">
+        <textarea name="text" rows="5" cols="80" placeholder="Enter text to analyze"></textarea><br><br>
+        <label for="file">Or upload a text file:</label>
+        <input type="file" name="file" id="file" accept=".txt"><br><br>
+        <input type="hidden" name="submission_type" id="submission_type" value="text">
+        <input type="submit" value="Detect Text">
+    </form>
+    {% if prediction_result %}
+    <h2>Prediction:</h2>
+    <p>{{ prediction_result }}</p>
+    <h3>You entered:</h3>
+    <p>{{ analyzed_text }}</p>
+    {% endif %}
+
+    {% if error %}
+    <p style="color: red;">{{ error }}</p>
+    {% endif %}
+    {% if prediction_result %}
+    <div class="prediction-container">
+        <h2>Prediction:</h2>
+        <p>{{ prediction_result }}</p>
+        <h3>You entered:</h3>
+        <p>{{ analyzed_text }}</p>
+
+        <h3>Was this prediction correct?</h3>
+        <form method="POST" action="/feedback">
+            <input type="hidden" name="text" value="{{ analyzed_text }}">
+            <input type="hidden" name="prediction" value="{{ prediction_result }}">
+            <input type="radio" id="correct" name="feedback" value="correct">
+            <label for="correct">Yes</label>&nbsp;&nbsp;
+            <input type="radio" id="incorrect" name="feedback" value="incorrect">
+            <label for="incorrect">No</label><br><br>
+            <input type="submit" value="Submit Feedback">
+        </form>
+        {% if feedback_submitted %}
+        <p style="color: green;">Thank you for your feedback!</p>
+        {% endif %}
+    </div>
+    {% endif %}
+    <script>
+        const textarea = document.querySelector('textarea[name="text"]');
+        const fileInput = document.getElementById('file');
+        const submissionType = document.getElementById('submission_type');
+
+        textarea.addEventListener('input', function () {
+            if (this.value.trim() !== '') {
+                fileInput.value = ''; // Clear any selected file
+                submissionType.value = 'text';
+            }
+        });
+
+        fileInput.addEventListener('change', function () {
+            textarea.value = ''; // Clear the textarea
+            submissionType.value = 'file';
+        });
+    </script>
+</body>
+
+</html>
